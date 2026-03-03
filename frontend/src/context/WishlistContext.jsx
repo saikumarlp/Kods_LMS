@@ -13,7 +13,7 @@ export const WishlistProvider = ({ children }) => {
 
     // Fetch wishlist from backend
     const fetchWishlist = useCallback(async () => {
-        if (!user) { setWishlist([]); setWishlistItems([]); return; }
+        if (!user || !localStorage.getItem('token')) { setWishlist([]); setWishlistItems([]); return; }
         try {
             setLoading(true);
             const { data } = await api.get('/wishlist');
