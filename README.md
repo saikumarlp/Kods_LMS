@@ -86,11 +86,16 @@ The project is structured to easily deploy on modern cloud platforms.
 3. Add `VITE_API_URL` to Vercel Environment Variables pointing to your deployed backend URL.
 4. The included `vercel.json` will automatically handle client-side routing rewrites.
 
-**Backend (Render / Railway / Fly.io)**
-1. Deploy the `backend` directory as a Node.js API.
-2. Provide your `DATABASE_URL` and `JWT_SECRET` in the platform's Environment Variables.
-3. Ensure the start command is `node index.js`.
-4. Update the `FRONTEND_URL` to match your Vercel deployment URL to configure CORS correctly.
+**Backend (Render)**
+1. Connect your GitHub repository to Render and create a new **Web Service**.
+2. Set the **Root Directory** to `backend`.
+3. Set the **Build Command** to `npm install && npm run build`. (This installs dependencies and generates the Prisma client).
+4. Set the **Start Command** to `npm start`.
+5. Add the required **Environment Variables** in the Render dashboard:
+   - `DATABASE_URL` (Your Aiven PostgreSQL URL, ensure it has `?sslmode=require`)
+   - `JWT_SECRET`
+   - `JWT_REFRESH_SECRET`
+   - `FRONTEND_URL` (Your Vercel frontend URL, e.g., `https://your-app.vercel.app`)
 
 ## 📡 API Summary (Backend Routes)
 

@@ -36,6 +36,11 @@ app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 
+// Health Check Route
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK' });
+});
+
 // Error Handling Middleware
 app.use(errorHandler);
 
