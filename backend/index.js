@@ -15,24 +15,22 @@ dotenv.config();
 const app = express();
 
 // Middlewares
-const defaultOrigins = [
+// Allow: localhost (dev) + any Vercel preview/production domain
+const allowedOriginPattern = /^https:\/\/[\w-]+(\.vercel\.app)$/;
+const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:5174',
     'http://localhost:5175',
     'http://localhost:5176',
-    'https://kods-lms.vercel.app',
-    'https://kods-pwvg523ub-saipujari029-5330s-projects.vercel.app'
 ];
-const extraOrigins = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',') : [];
-const allowedOrigins = [...new Set([...defaultOrigins, ...extraOrigins])];
 
 app.use(cors({
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
+        if (!origin) return callback(null, true); // allow server-to-server / curl
+        if (allowedOrigins.includes(origin) || allowedOriginPattern.test(origin)) {
+            return callback(null, true);
         }
+        callback(new Error('Not allowed by CORS'));
     },
     credentials: true
 }));
