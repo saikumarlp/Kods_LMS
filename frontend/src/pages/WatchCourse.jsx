@@ -86,8 +86,8 @@ const WatchCourse = () => {
 
             try {
                 // Always fetch the full course data (sections + lectures + isPreview)
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-                const courseRes = await axios.get(`${apiUrl}/courses/${parsedId}`);
+                const API_URL = import.meta.env.VITE_API_URL;
+                const courseRes = await axios.get(`${API_URL}/api/courses/${parsedId}`);
                 const fetchedCourse = courseRes.data;
                 setCourse(fetchedCourse);
 

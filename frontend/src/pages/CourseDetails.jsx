@@ -126,8 +126,8 @@ const CourseDetails = () => {
             const parsedId = parseInt(id, 10);
             if (isNaN(parsedId)) { setError('Invalid course ID'); setLoading(false); return; }
             try {
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-                const { data } = await axios.get(`${apiUrl}/courses/${parsedId}`);
+                const API_URL = import.meta.env.VITE_API_URL;
+                const { data } = await axios.get(`${API_URL}/api/courses/${parsedId}`);
                 setCourse(data);
                 if (user) {
                     try {
@@ -151,8 +151,8 @@ const CourseDetails = () => {
         if (!id) return;
         setReviewsLoading(true);
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-            const { data } = await axios.get(`${apiUrl}/reviews/course/${id}`);
+            const API_URL = import.meta.env.VITE_API_URL;
+            const { data } = await axios.get(`${API_URL}/api/reviews/course/${id}`);
             setReviews(data);
             if (user) {
                 const mine = data.find(r => r.userId === user.id || r.user?.name === user.name);

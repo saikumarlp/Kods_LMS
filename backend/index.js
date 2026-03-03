@@ -15,7 +15,17 @@ dotenv.config();
 const app = express();
 
 // Middlewares
-const allowedOrigins = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',') : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176'];
+const defaultOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    'http://localhost:5176',
+    'https://kods-lms.vercel.app',
+    'https://kods-pwvg523ub-saipujari029-5330s-projects.vercel.app'
+];
+const extraOrigins = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',') : [];
+const allowedOrigins = [...new Set([...defaultOrigins, ...extraOrigins])];
+
 app.use(cors({
     origin: function (origin, callback) {
         if (!origin || allowedOrigins.includes(origin)) {
