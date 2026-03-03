@@ -9,7 +9,11 @@ const api = axios.create({
     },
 });
 
-// Request interceptor to add the auth token
+// Allow AuthContext to register its logout function so React state is cleared on 401
+let logoutCallback = null;
+export const setLogoutCallback = (fn) => { logoutCallback = fn; };
+
+// Request interceptor — attach Bearer token to every request
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
@@ -18,23 +22,18 @@ api.interceptors.request.use(
         }
         return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle token expiration/401s
+// Response interceptor — on 401, clear session and redirect to login
 api.interceptors.response.use(
-    (response) => {
-        return response;
-    },
+    (response) => response,
     (error) => {
-        // We could handle refresh token logic here if we wanted auto-refresh
-        if (error.response && error.response.status === 401) {
-            // Clear token and redirect to login if unauthorized
+        if (error.response?.status === 401) {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            // window.location.href = '/login'; // Optional: Redirect to login
+            if (logoutCallback) logoutCallback();          // clear React state
+            window.location.href = '/login';               // redirect to login
         }
         return Promise.reject(error);
     }
