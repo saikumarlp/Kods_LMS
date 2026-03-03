@@ -19,6 +19,13 @@ KosLearn is a full-stack Learning Management System (LMS) clone similar to Udemy
 - **Reviews & Ratings**: Students can leave ratings and reviews for enrolled courses.
 - **Instructor Dashboard**: (Coming Soon) Instructors can manage their own courses.
 
+## 📸 Screenshots
+
+*(Add screenshots of your application here)*
+- **Home Page**: `![Home](docs/home.png)`
+- **Course Details**: `![Details](docs/details.png)`
+- **Video Player**: `![Player](docs/player.png)`
+
 ## 🛠️ Setup Instructions
 
 ### Prerequisites
