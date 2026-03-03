@@ -1,0 +1,40 @@
+Starting seed process...
+(node:4380) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Seeding failed:  PrismaClientKnownRequestError: 
+Invalid `prisma.user.findFirst()` invocation:
+
+
+Error opening a TLS connection: self-signed certificate in certificate chain
+    at zr.handleRequestError (D:\Bank_Application\lms-project\backend\node_modules\@prisma\client\runtime\client.js:65:8286)
+    at zr.handleAndLogRequestError (D:\Bank_Application\lms-project\backend\node_modules\@prisma\client\runtime\client.js:65:7581)
+    at zr.request (D:\Bank_Application\lms-project\backend\node_modules\@prisma\client\runtime\client.js:65:7288)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async a (D:\Bank_Application\lms-project\backend\node_modules\@prisma\client\runtime\client.js:75:5816)
+    at async seedPythonCourse (file:///D:/Bank_Application/lms-project/backend/seed.js:10:26) {
+  code: 'P1011',
+  meta: {
+    modelName: 'User',
+    driverAdapterError: DriverAdapterError: TlsConnectionError
+        at PrismaPgAdapter.onError (file:///D:/Bank_Application/lms-project/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:651:11)
+        at PrismaPgAdapter.performIO (file:///D:/Bank_Application/lms-project/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:646:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        at async PrismaPgAdapter.queryRaw (file:///D:/Bank_Application/lms-project/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:566:30)
+        at async e.interpretNode (D:\Bank_Application\lms-project\backend\node_modules\@prisma\client\runtime\client.js:11:44403)
+        at async e.interpretNode (D:\Bank_Application\lms-project\backend\node_modules\@prisma\client\runtime\client.js:11:44843)
+        at async e.interpretNode (D:\Bank_Application\lms-project\backend\node_modules\@prisma\client\runtime\client.js:11:46032)
+        at async e.run (D:\Bank_Application\lms-project\backend\node_modules\@prisma\client\runtime\client.js:11:43121)
+        at async e.execute (D:\Bank_Application\lms-project\backend\node_modules\@prisma\client\runtime\client.js:57:815)
+        at async qt.request (D:\Bank_Application\lms-project\backend\node_modules\@prisma\client\runtime\client.js:58:2327) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.4.1'
+}

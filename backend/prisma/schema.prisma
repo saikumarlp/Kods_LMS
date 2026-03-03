@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           Int          @id @default(autoincrement())
+  name         String
+  email        String       @unique
+  password     String
+  role         Role         @default(STUDENT)
+  courses      Course[]     @relation("InstructorCourses")
+  enrollments  Enrollment[]
+  reviews      Review[]
+  wishlists    Wishlist[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Course {
+  id            Int          @id @default(autoincrement())
+  title         String
+  description   String       @db.Text
+  price         Decimal      @default(0) @db.Decimal(10, 2)
+  discountPrice Decimal?     @db.Decimal(10, 2)
+  thumbnail     String?       
+  category      String?      
+  level         String?      @default("All Levels")
+  totalDuration Int          @default(0) // Total duration in seconds
+  instructorId  Int
+  instructor    User         @relation("InstructorCourses", fields: [instructorId], references: [id])
+  averageRating Float        @default(0.0)
+  sections      Section[]
+  enrollments   Enrollment[]
+  reviews       Review[]
+  wishlistedBy  Wishlist[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Section {
+  id          Int          @id @default(autoincrement())
+  title       String
+  courseId    Int
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  orderIndex  Int
+  lectures    Lecture[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Lecture {
+  id          Int             @id @default(autoincrement())
+  title       String
+  videoUrl    String?
+  sectionId   Int
+  section     Section         @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  orderIndex  Int
+  duration    Int             @default(0) // Duration in seconds
+  isPreview   Boolean         @default(false) // free preview without enrollment
+  progress    VideoProgress[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model Enrollment {
+  id              Int             @id @default(autoincrement())
+  userId          Int
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId        Int
+  course          Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progressPercent Float           @default(0.0)
+  videoProgress   VideoProgress[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@unique([userId, courseId])
+}
+
+model VideoProgress {
+  id                   Int        @id @default(autoincrement())
+  enrollmentId         Int
+  enrollment           Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  lectureId            Int
+  lecture              Lecture    @relation(fields: [lectureId], references: [id], onDelete: Cascade)
+  isCompleted          Boolean    @default(false)
+  lastWatchedTimestamp Int        @default(0) // Timestamp in seconds
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  @@unique([enrollmentId, lectureId])
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  comment   String?  @db.Text
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId  Int
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+}
+
+enum Role {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId  Int
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, courseId])
+}

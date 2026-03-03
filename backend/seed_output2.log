@@ -1,0 +1,45 @@
+Starting seed process...
+(node:17016) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:17016) Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and HTTPS requests insecure by disabling certificate verification.
+Seeding failed:  PrismaClientValidationError: 
+Invalid `prisma.course.create()` invocation:
+
+{
+  data: {
+    title: "Complete Python Developer Bootcamp",
+    description: "Master Python by building 100 projects in 100 days. Learn to code, scrape web data, build APIs, and master object-oriented programming.",
+    price: 19.99,
+    thumbnail: "https://images.unsplash.com/photo-1526379095098-d400fd0bfce8?auto=format&fit=crop&q=80&w=1200",
+    category: "Development",
+    ~~~~~~~~
+    level: "Beginner",
+    instructorId: 1,
+    averageRating: 4.8,
+    totalDuration: 5200,
+?   id?: Int,
+?   createdAt?: DateTime,
+?   updatedAt?: DateTime,
+?   sections?: SectionUncheckedCreateNestedManyWithoutCourseInput,
+?   enrollments?: EnrollmentUncheckedCreateNestedManyWithoutCourseInput,
+?   reviews?: ReviewUncheckedCreateNestedManyWithoutCourseInput
+  }
+}
+
+Unknown argument `category`. Available options are marked with ?.
+    at ar (D:\Bank_Application\lms-project\backend\node_modules\@prisma\client\runtime\client.js:10:1379)
+    at zr.handleRequestError (D:\Bank_Application\lms-project\backend\node_modules\@prisma\client\runtime\client.js:65:7929)
+    at zr.handleAndLogRequestError (D:\Bank_Application\lms-project\backend\node_modules\@prisma\client\runtime\client.js:65:7581)
+    at zr.request (D:\Bank_Application\lms-project\backend\node_modules\@prisma\client\runtime\client.js:65:7288)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async a (D:\Bank_Application\lms-project\backend\node_modules\@prisma\client\runtime\client.js:75:5816)
+    at async seedPythonCourse (file:///D:/Bank_Application/lms-project/backend/seed.js:34:24) {
+  clientVersion: '7.4.1'
+}

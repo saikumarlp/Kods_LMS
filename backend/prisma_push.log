@@ -1,0 +1,9 @@
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma\schema.prisma.
+Datasource "db": PostgreSQL database "defaultdb", schema "public" at "pg-17743f30-saipujari029-8613.j.aivencloud.com:12771"
+
+The PostgreSQL database "defaultdb" schema "public" at "pg-17743f30-saipujari029-8613.j.aivencloud.com:12771" was successfully reset.
+
+Your database is now in sync with your Prisma schema. Done in 9.88s
+
