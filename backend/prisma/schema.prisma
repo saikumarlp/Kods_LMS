@@ -7,75 +7,75 @@ datasource db {
 }
 
 model User {
-  id           Int          @id @default(autoincrement())
-  name         String
-  email        String       @unique
-  password     String
-  role         Role         @default(STUDENT)
-  courses      Course[]     @relation("InstructorCourses")
-  enrollments  Enrollment[]
-  reviews      Review[]
-  wishlists    Wishlist[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id          Int          @id @default(autoincrement())
+  name        String
+  email       String       @unique
+  password    String
+  role        Role         @default(STUDENT)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  courses     Course[]     @relation("InstructorCourses")
+  enrollments Enrollment[]
+  reviews     Review[]
+  wishlists   Wishlist[]
 }
 
 model Course {
   id            Int          @id @default(autoincrement())
   title         String
-  description   String       @db.Text
+  description   String
   price         Decimal      @default(0) @db.Decimal(10, 2)
   discountPrice Decimal?     @db.Decimal(10, 2)
-  thumbnail     String?       
-  category      String?      
+  thumbnail     String?
+  category      String?
   level         String?      @default("All Levels")
-  totalDuration Int          @default(0) // Total duration in seconds
+  totalDuration Int          @default(0)
   instructorId  Int
-  instructor    User         @relation("InstructorCourses", fields: [instructorId], references: [id])
   averageRating Float        @default(0.0)
-  sections      Section[]
-  enrollments   Enrollment[]
-  reviews       Review[]
-  wishlistedBy  Wishlist[]
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+  instructor    User         @relation("InstructorCourses", fields: [instructorId], references: [id])
+  enrollments   Enrollment[]
+  reviews       Review[]
+  sections      Section[]
+  wishlistedBy  Wishlist[]
 }
 
 model Section {
-  id          Int          @id @default(autoincrement())
-  title       String
-  courseId    Int
-  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  orderIndex  Int
-  lectures    Lecture[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id         Int       @id @default(autoincrement())
+  title      String
+  courseId   Int
+  orderIndex Int
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  lectures   Lecture[]
+  course     Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
 model Lecture {
-  id          Int             @id @default(autoincrement())
-  title       String
-  videoUrl    String?
-  sectionId   Int
-  section     Section         @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  orderIndex  Int
-  duration    Int             @default(0) // Duration in seconds
-  isPreview   Boolean         @default(false) // free preview without enrollment
-  progress    VideoProgress[]
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  id         Int             @id @default(autoincrement())
+  title      String
+  videoUrl   String?
+  sectionId  Int
+  orderIndex Int
+  duration   Int             @default(0)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  isPreview  Boolean         @default(false)
+  section    Section         @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  progress   VideoProgress[]
 }
 
 model Enrollment {
   id              Int             @id @default(autoincrement())
   userId          Int
-  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   courseId        Int
-  course          Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
   progressPercent Float           @default(0.0)
-  videoProgress   VideoProgress[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
+  course          Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  videoProgress   VideoProgress[]
 
   @@unique([userId, courseId])
 }
@@ -83,13 +83,13 @@ model Enrollment {
 model VideoProgress {
   id                   Int        @id @default(autoincrement())
   enrollmentId         Int
-  enrollment           Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
   lectureId            Int
-  lecture              Lecture    @relation(fields: [lectureId], references: [id], onDelete: Cascade)
   isCompleted          Boolean    @default(false)
-  lastWatchedTimestamp Int        @default(0) // Timestamp in seconds
+  lastWatchedTimestamp Int        @default(0)
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
+  enrollment           Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  lecture              Lecture    @relation(fields: [lectureId], references: [id], onDelete: Cascade)
 
   @@unique([enrollmentId, lectureId])
 }
@@ -97,13 +97,24 @@ model VideoProgress {
 model Review {
   id        Int      @id @default(autoincrement())
   rating    Int
-  comment   String?  @db.Text
+  comment   String?
   userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   courseId  Int
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+model Wishlist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  courseId  Int
+  createdAt DateTime @default(now())
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
 }
@@ -112,15 +123,4 @@ enum Role {
   STUDENT
   INSTRUCTOR
   ADMIN
-}
-
-model Wishlist {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId  Int
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@unique([userId, courseId])
 }
