@@ -26,14 +26,18 @@ api.interceptors.request.use(
 );
 
 // Response interceptor — on 401, clear session and redirect to login
+// BUT skip auth endpoints so login/register errors bubble up to the form
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
+        const url = error.config?.url || '';
+        const isAuthRoute = url.includes('/auth/login') || url.includes('/auth/register');
+
+        if (error.response?.status === 401 && !isAuthRoute) {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            if (logoutCallback) logoutCallback();          // clear React state
-            window.location.href = '/login';               // redirect to login
+            if (logoutCallback) logoutCallback();
+            window.location.href = '/login';
         }
         return Promise.reject(error);
     }

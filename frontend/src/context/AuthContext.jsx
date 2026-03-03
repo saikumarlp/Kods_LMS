@@ -28,6 +28,9 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         const { data } = await api.post('/auth/login', { email, password });
 
+        // Temporary debug — shows response shape in browser console
+        console.log('Login Response:', data);
+
         // Backend returns accessToken; accept either field name for safety
         const jwt = data.accessToken || data.token;
 
