@@ -241,6 +241,66 @@ const WatchCourse = () => {
     // Reset video error when lecture changes
     useEffect(() => { setVideoError(false); }, [activeLecture?.id]);
 
+    // ── YouTube IFrame API: save timestamp every 30s and on lecture change ──
+    const ytPlayerRef = useRef(null);
+    const saveIntervalRef = useRef(null);
+
+    useEffect(() => {
+        if (!activeLecture || !isEnrolled || !enrollment) return;
+
+        // Load the YouTube IFrame API script once
+        const loadYTApi = () => {
+            if (window.YT && window.YT.Player) return Promise.resolve();
+            return new Promise((resolve) => {
+                const tag = document.getElementById('yt-iframe-api');
+                if (!tag) {
+                    const script = document.createElement('script');
+                    script.id = 'yt-iframe-api';
+                    script.src = 'https://www.youtube.com/iframe_api';
+                    document.head.appendChild(script);
+                }
+                window.onYouTubeIframeAPIReady = resolve;
+            });
+        };
+
+        let cancelled = false;
+
+        loadYTApi().then(() => {
+            if (cancelled) return;
+            // Small delay to let the iframe render
+            setTimeout(() => {
+                if (cancelled) return;
+                try {
+                    ytPlayerRef.current = new window.YT.Player(`yt-iframe-${activeLecture.id}`, {
+                        events: {
+                            onReady: () => {
+                                // Save every 30 seconds while watching
+                                saveIntervalRef.current = setInterval(async () => {
+                                    try {
+                                        const t = ytPlayerRef.current?.getCurrentTime?.();
+                                        if (t && t > 0) await saveTimestamp(t);
+                                    } catch (_) { }
+                                }, 30000);
+                            }
+                        }
+                    });
+                } catch (_) { }
+            }, 1500);
+        });
+
+        return () => {
+            cancelled = true;
+            // Save position when leaving this lecture
+            try {
+                const t = ytPlayerRef.current?.getCurrentTime?.();
+                if (t && t > 0) saveTimestamp(t);
+            } catch (_) { }
+            clearInterval(saveIntervalRef.current);
+            ytPlayerRef.current = null;
+        };
+    }, [activeLecture?.id, isEnrolled]);
+
+
     /* ── Helpers ── */
     // Generates canonical embed URL from stored 11-char ID or legacy URL
     const getEmbedUrl = (urlOrId) => {
@@ -390,7 +450,8 @@ const WatchCourse = () => {
                             embedUrlWithStart && !videoError ? (
                                 <iframe
                                     key={activeLecture.id}
-                                    src={embedUrlWithStart}
+                                    id={`yt-iframe-${activeLecture.id}`}
+                                    src={embedUrlWithStart?.includes('enablejsapi') ? embedUrlWithStart : `${embedUrlWithStart}&enablejsapi=1`}
                                     className="w-full h-full absolute inset-0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                                     allowFullScreen
