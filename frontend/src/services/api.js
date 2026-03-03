@@ -25,8 +25,9 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Response interceptor — on 401, clear session and redirect to login
-// BUT skip auth endpoints so login/register errors bubble up to the form
+// Response interceptor — on 401, clear session
+// PrivateRoute in App.jsx handles the /login redirect via React Router (no page reload)
+// Auth routes are excluded so wrong-password errors show as form messages
 api.interceptors.response.use(
     (response) => response,
     (error) => {
@@ -36,8 +37,7 @@ api.interceptors.response.use(
         if (error.response?.status === 401 && !isAuthRoute) {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            if (logoutCallback) logoutCallback();
-            window.location.href = '/login';
+            if (logoutCallback) logoutCallback(); // clears React state → PrivateRoute redirects
         }
         return Promise.reject(error);
     }
