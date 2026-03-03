@@ -14,6 +14,12 @@ import WatchCourse from './pages/WatchCourse';
 import Wishlist from './pages/Wishlist';
 import { Toaster } from 'react-hot-toast';
 
+// Guard: redirects unauthenticated users to /login
+const PrivateRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  return token ? children : <Navigate to="/login" replace />;
+};
+
 // Shell decides whether to show Navbar/Footer based on current route
 const AppShell = () => {
   const { pathname } = useLocation();
@@ -29,9 +35,9 @@ const AppShell = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/course/:id" element={<CourseDetails />} />
-          <Route path="/watch/:courseId" element={<WatchCourse />} />
-          <Route path="/my-learning" element={<MyLearning />} />
-          <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/watch/:courseId" element={<PrivateRoute><WatchCourse /></PrivateRoute>} />
+          <Route path="/my-learning" element={<PrivateRoute><MyLearning /></PrivateRoute>} />
+          <Route path="/wishlist" element={<PrivateRoute><Wishlist /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
