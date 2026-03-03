@@ -25,6 +25,8 @@ jobs:
         run: npm ci || npm install
       - name: Run ESLint
         run: npm run lint
+      - name: Run Build Check
+        run: npm run build
 
   backend-test:
     name: Backend Tests
