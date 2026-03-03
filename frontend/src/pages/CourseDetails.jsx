@@ -98,7 +98,7 @@ const ReviewCard = ({ review }) => {
 const CourseDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { user, token } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const { isWishlisted, toggleWishlist } = useWishlist();
 
     const [course, setCourse] = useState(null);
@@ -129,7 +129,7 @@ const CourseDetails = () => {
                 const API_URL = import.meta.env.VITE_API_URL;
                 const { data } = await axios.get(`${API_URL}/api/courses/${parsedId}`);
                 setCourse(data);
-                if (user && token) {
+                if (user) {
                     try {
                         const { data: enrollData } = await api.get('/enrollments');
                         const userEnrollments = enrollData.enrollments || [];
@@ -182,7 +182,7 @@ const CourseDetails = () => {
 
     /* actions */
     const handleEnrollment = async () => {
-        if (!user || !token) { navigate('/login'); return; }
+        if (!user) { navigate('/login'); return; }
         setIsEnrolling(true); setEnrollError(null);
         try {
             await api.post('/enrollments', { courseId: parseInt(id) });
@@ -190,12 +190,7 @@ const CourseDetails = () => {
             toast.success('Successfully enrolled! Redirecting...');
             setTimeout(() => navigate(`/watch/${id}`), 1000);
         } catch (err) {
-            // If token is expired/invalid, redirect to login
-            if (err.response?.status === 401) {
-                navigate('/login');
-                return;
-            }
-            setEnrollError(err.response?.data?.message || 'Failed to enroll. Please try again.');
+            setEnrollError(err.response?.data?.message || 'Failed to enroll');
             setIsEnrolling(false);
         }
     };
